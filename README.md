@@ -1,2 +1,2 @@
 # shipyard-utils
-Small scripts and utilities to make Blueprint development easier.
+Small scripts and utilities to make Shipyard Blueprint development easier.
