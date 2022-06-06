@@ -28,7 +28,7 @@ def set_environment_variables(environment_variables_to_set):
 
 def create_shipyard_link():
     """
-    Create a link back to the Shipyard log page for the current alert.
+    Create a link back to the Shipyard log page for the currently running voyage.
     """
     org_name = os.environ.get('SHIPYARD_ORG_NAME')
     project_id = os.environ.get('SHIPYARD_PROJECT_ID')

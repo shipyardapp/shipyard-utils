@@ -3,6 +3,9 @@ import os
 
 
 def extract_from_timestamp(timestamp, time_part):
+    """
+    Extract the year, month, day, hour, minute, or second from a Shipyard generated timestamp.
+    """
     datetime_timestamp = parser.parse(timestamp)
     if time_part in [
         'year',
@@ -15,11 +18,11 @@ def extract_from_timestamp(timestamp, time_part):
         'yy',
         'yyyy'
     ]:
-        datetime_timestamp.year
+        time_value = datetime_timestamp.year
     if time_part in ['month', 'MONTH', 'Month', 'M', 'MM']:
-        datetime_timestamp.month
+        time_value = datetime_timestamp.month
     if time_part in ['day', 'DAY', 'Day', 'D', 'DD', 'd', 'dd']:
-        datetime_timestamp.day
+        time_value = datetime_timestamp.day
     if time_part in [
         'hour',
         'HOUR',
@@ -32,7 +35,7 @@ def extract_from_timestamp(timestamp, time_part):
         'HR',
         'Hr'
     ]:
-        datetime_timestamp.hour
+        time_value = datetime_timestamp.hour
     if time_part in [
         'minute',
         'MINUTE',
@@ -43,7 +46,7 @@ def extract_from_timestamp(timestamp, time_part):
         'MIN',
         'Min'
     ]:
-        datetime_timestamp.minute
+        time_value = datetime_timestamp.minute
     if time_part in [
         'second',
         'SECOND',
@@ -56,11 +59,15 @@ def extract_from_timestamp(timestamp, time_part):
         'SEC',
         'Sec'
     ]:
-        datetime_timestamp.second
+        time_value = datetime_timestamp.second
     return str(time_value)
 
 
 def set_extra_time_environment_variables():
+    """
+    Expand the existing set of Shipyard timestamp environment variables to include
+    year, month, day, hour, minute, and second.
+    """
     shipyard_elements = ['VESSEL', 'FLEET']
     time_types = ['START', 'SCHEDULED']
 
