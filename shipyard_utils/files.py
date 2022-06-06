@@ -108,7 +108,19 @@ def find_all_file_matches(file_names, file_name_re):
     return matching_file_names
 
 
-def create_local_folder_structure(destination_folder_name):
+def create_folder_if_dne(destination_folder_name):
     if not os.path.exists(destination_folder_name) and (
             destination_folder_name != ''):
         os.makedirs(destination_folder_name)
+    return
+
+
+def write_json_to_file(json_object, file_name):
+    with open(file_name, 'w') as f:
+        f.write(
+            json.dumps(
+                json_object,
+                ensure_ascii=False,
+                indent=4))
+    print(f'Response stored at {file_name}')
+    return
