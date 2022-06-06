@@ -18,6 +18,8 @@ def set_environment_variables(environment_variables_to_set):
     """
     Set any args.value to an environment variable.
     This will override system defaults.
+    Must be formatted as:
+    {'ENVIRONMENT_VARIABLE_NAME': args.value}
     """
     for environment_variable_name, arg_name in environment_variables_to_set.items():
         os.environ[environment_variable_name] = arg_name
