@@ -1,12 +1,13 @@
 [tool.poetry]
 name = "shipyard-utils"
-version = "0.1.2-beta"
+version = "0.1.2"
 description = "Small scripts and utilities to make Shipyard Blueprint development easier."
 authors = ["Blake Burch <blake@shipyardapp.com>"]
 license = "Apache-2.0"
 
 [tool.poetry.dependencies]
 python = "^3.7"
+python-dateutil = "==2.8.2"
 
 [tool.poetry.dev-dependencies]
 
