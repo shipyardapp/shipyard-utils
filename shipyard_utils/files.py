@@ -2,6 +2,8 @@ import os
 import re
 import glob
 import json
+from zipfile import ZipFile
+import tarfile
 
 # Functions for Files
 
@@ -102,6 +104,57 @@ def determine_destination_full_path(
         destination_folder_name, destination_file_name)
     return destination_full_path
 
+# Functions for handling large files
+
+
+def compress_files(file_paths, destination_full_path, compression):
+    """
+    Given a list of files, compress all of them into a single file.
+    Keeps the existing directory structure in tact.
+    """
+    if f'.{compression}' in destination_full_path:
+        compressed_file_name = destination_full_path
+    else:
+        compressed_file_name = f'{destination_full_path}.{compression}'
+
+    if compression == 'zip':
+        with ZipFile(compressed_file_name, 'w') as zip:
+            for file in file_paths:
+                file = file.replace(os.getcwd(), '')
+                zip.write(file)
+                print(f'Successfully compressed {file}')
+
+    if compression == 'tar.bz2':
+        with tarfile.open(compressed_file_name, 'w:bz2') as tar:
+            for file in file_paths:
+                file = file.replace(os.getcwd(), '')
+                tar.add(file)
+                print(f'Successfully compressed files')
+
+    if compression == 'tar':
+        with tarfile.open(compressed_file_name, 'w') as tar:
+            for file in file_paths:
+                file = file.replace(os.getcwd(), '')
+                tar.add(file)
+                print(f'Successfully compressed {file}')
+
+    if compression == 'tar.gz':
+        with tarfile.open(compressed_file_name, 'w:gz') as tar:
+            for file in file_paths:
+                file = file.replace(os.getcwd(), '')
+                tar.add(file)
+                print(f'Successfully compressed {file}')
+
+
+def is_file_too_large(file_path, max_size_bytes=10000000):
+    """
+    Determine if the file is too large for Slack's upload limit.
+    Used to conditionally compress a file.
+    """
+    if os.stat(file_path).st_size >= max_size_bytes:
+        return True
+    else:
+        return False
 
 # Functions for Regex Matching Logic
 
