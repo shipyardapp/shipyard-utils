@@ -208,6 +208,8 @@ def find_all_file_matches(file_names, file_name_re):
     for file in file_names:
         if re.search(file_name_re, file):
             matching_file_names.append(file)
+    print(f'Found {len(matching_files_names)} file matches.')
+    print(matching_file_names)
     return matching_file_names
 
 # Functions for Writing Files
