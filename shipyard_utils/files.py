@@ -178,10 +178,24 @@ def decompress_file(source_full_path, destination_full_path, compression):
 
 def is_file_too_large(file_path, max_size_bytes=10000000):
     """
-    Determine if the file is too large for Slack's upload limit.
+    Determine if the file is too large for a specified limit.
     Used to conditionally compress a file.
     """
     if os.stat(file_path).st_size >= max_size_bytes:
+        return True
+    else:
+        return False
+
+
+def are_files_too_large(file_paths, max_size_bytes=10000000):
+    """
+    Determine if the total size of all files in a list are too large for a specified limit.
+    Used to conditionally compress a file.
+    """
+    total_size = 0
+    for file in file_paths:
+        total_size += os.stat(file).st_size
+    if total_size >= max_size_bytes:
         return True
     else:
         return False
