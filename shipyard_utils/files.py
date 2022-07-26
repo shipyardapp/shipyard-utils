@@ -120,30 +120,36 @@ def compress_files(file_paths, destination_full_path, compression):
     if compression == 'zip':
         with ZipFile(compressed_file_name, 'w') as zip:
             for file in file_paths:
-                file = file.replace(os.getcwd(), '')
+                file = clean_folder_name(file.replace(os.getcwd(), ''))
                 zip.write(file)
-                print(f'Successfully compressed {file}')
+                print(
+                    f'Successfully compressed {file} into {compressed_file_name}')
 
     if compression == 'tar.bz2':
         with tarfile.open(compressed_file_name, 'w:bz2') as tar:
             for file in file_paths:
-                file = file.replace(os.getcwd(), '')
+                file = clean_folder_name(file.replace(os.getcwd(), ''))
                 tar.add(file)
-                print(f'Successfully compressed files')
+                print(
+                    f'Successfully compressed {file} into {compressed_file_name}')
 
     if compression == 'tar':
         with tarfile.open(compressed_file_name, 'w') as tar:
             for file in file_paths:
-                file = file.replace(os.getcwd(), '')
+                file = clean_folder_name(file.replace(os.getcwd(), ''))
                 tar.add(file)
-                print(f'Successfully compressed {file}')
+                print(
+                    f'Successfully compressed {file} into {compressed_file_name}')
 
     if compression == 'tar.gz':
         with tarfile.open(compressed_file_name, 'w:gz') as tar:
             for file in file_paths:
-                file = file.replace(os.getcwd(), '')
+                file = clean_folder_name(file.replace(os.getcwd(), ''))
                 tar.add(file)
-                print(f'Successfully compressed {file}')
+                print(
+                    f'Successfully compressed {file} into {compressed_file_name}')
+
+    return compressed_file_name
 
 
 def decompress_file(source_full_path, destination_full_path, compression):
@@ -222,7 +228,7 @@ def find_all_file_matches(file_names, file_name_re):
     for file in file_names:
         if re.search(file_name_re, file):
             matching_file_names.append(file)
-    print(f'Found {len(matching_files_names)} file matches.')
+    print(f'Found {len(matching_file_names)} file matches.')
     print(matching_file_names)
     return matching_file_names
 
