@@ -5,8 +5,6 @@ import json
 from zipfile import ZipFile
 import tarfile
 
-from grpc import Compression
-
 # Functions for Files
 
 
@@ -120,7 +118,7 @@ def compress_files(file_paths, destination_full_path, compression):
         compressed_file_name = f'{destination_full_path}.{compression}'
 
     if compression == 'zip':
-        compress_with_zip(file_paths, compressed_file_name)
+        compress_with_zip(file_paths, compressed_file_name, compression)
 
     if 'tar' in compression:
         compress_with_tar(file_paths, compressed_file_name, compression)
@@ -128,7 +126,7 @@ def compress_files(file_paths, destination_full_path, compression):
     return compressed_file_name
 
 
-def compress_with_zip(file_paths, compressed_file_name):
+def compress_with_zip(file_paths, compressed_file_name, compression):
     """
     Compress a list of files using the zip method.
     """
@@ -178,42 +176,43 @@ def decompress_file(source_full_path, destination_full_path, compression):
 
     if compression == 'zip':
         decompress_with_zip(
-    source_full_path,
-    destination_full_path,
-     compression)
+            source_full_path,
+            destination_full_path,
+            compression)
 
     if compression == 'tar.bz2':
         decompress_with_tar(
-    source_full_path,
-    destination_full_path,
-     compression)
+            source_full_path,
+            destination_full_path,
+            compression)
 
     if compression == 'tar':
         decompress_with_tar(
-    source_full_path,
-    destination_full_path,
-     compression)
+            source_full_path,
+            destination_full_path,
+            compression)
 
     if compression == 'tar.gz':
         decompress_with_tar(
-    source_full_path,
-    destination_full_path,
-     compression)
+            source_full_path,
+            destination_full_path,
+            compression)
 
 
 def decompress_with_zip(source_full_path, destination_full_path, compression):
     read_method = determine_read_method(compression)
     with ZipFile(source_full_path, read_method) as zip:
-            zip.extractall(destination_full_path)
+        zip.extractall(destination_full_path)
         print(
             f'Successfully extracted files from {source_full_path} to {destination_full_path}')
+
 
 def decompress_with_tar(source_full_path, destination_full_path, compression):
     read_method = determine_read_method(compression)
     file = tarfile.open(source_full_path, read_method)
-        file.extractall(path=destination_full_path)
-        print(
-            f'Successfully extracted files from {source_full_path} to {destination_full_path}')
+    file.extractall(path=destination_full_path)
+    print(
+        f'Successfully extracted files from {source_full_path} to {destination_full_path}')
 
 
 def determine_read_method(compression):
@@ -229,6 +228,7 @@ def determine_read_method(compression):
         read_method = 'r'
 
     return read_method
+
 
 def is_file_too_large(file_path, max_size_bytes):
     """
