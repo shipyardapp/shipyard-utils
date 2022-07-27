@@ -230,8 +230,7 @@ def determine_read_method(compression):
 
     return read_method
 
-
-def is_file_too_large(file_path, max_size_bytes=10000000):
+def is_file_too_large(file_path, max_size_bytes):
     """
     Determine if the file is too large for a specified limit.
     Used to conditionally compress a file.
@@ -242,7 +241,7 @@ def is_file_too_large(file_path, max_size_bytes=10000000):
         return False
 
 
-def are_files_too_large(file_paths, max_size_bytes=10000000):
+def are_files_too_large(file_paths, max_size_bytes):
     """
     Determine if the total size of all files in a list are too large for a specified limit.
     Used to conditionally compress a file.
