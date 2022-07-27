@@ -5,6 +5,8 @@ import json
 from zipfile import ZipFile
 import tarfile
 
+from grpc import Compression
+
 # Functions for Files
 
 
@@ -118,38 +120,55 @@ def compress_files(file_paths, destination_full_path, compression):
         compressed_file_name = f'{destination_full_path}.{compression}'
 
     if compression == 'zip':
-        with ZipFile(compressed_file_name, 'w') as zip:
-            for file in file_paths:
-                file = clean_folder_name(file.replace(os.getcwd(), ''))
-                zip.write(file)
-                print(
-                    f'Successfully compressed {file} into {compressed_file_name}')
+        compress_with_zip(file_paths, compressed_file_name)
 
-    if compression == 'tar.bz2':
-        with tarfile.open(compressed_file_name, 'w:bz2') as tar:
-            for file in file_paths:
-                file = clean_folder_name(file.replace(os.getcwd(), ''))
-                tar.add(file)
-                print(
-                    f'Successfully compressed {file} into {compressed_file_name}')
-
-    if compression == 'tar':
-        with tarfile.open(compressed_file_name, 'w') as tar:
-            for file in file_paths:
-                file = clean_folder_name(file.replace(os.getcwd(), ''))
-                tar.add(file)
-                print(
-                    f'Successfully compressed {file} into {compressed_file_name}')
-
-    if compression == 'tar.gz':
-        with tarfile.open(compressed_file_name, 'w:gz') as tar:
-            for file in file_paths:
-                file = clean_folder_name(file.replace(os.getcwd(), ''))
-                tar.add(file)
-                print(
-                    f'Successfully compressed {file} into {compressed_file_name}')
+    if 'tar' in compression:
+        compress_with_tar(file_paths, compressed_file_name, compression)
 
     return compressed_file_name
+
+
+def compress_with_zip(file_paths, compressed_file_name):
+    """
+    Compress a list of files using the zip method.
+    """
+    write_method = determine_write_method(compression)
+
+    with ZipFile(compressed_file_name, write_method) as zip:
+        for file in file_paths:
+            file = clean_folder_name(file.replace(os.getcwd(), ''))
+            zip.write(file)
+            print(
+                f'Successfully compressed {file} into {compressed_file_name}')
+
+
+def compress_with_tar(file_paths, compressed_file_name, compression):
+    """
+    Compress a list of files using the tar method.
+    """
+    write_method = determine_write_method(compression)
+
+    with tarfile.open(compressed_file_name, write_method) as tar:
+        for file in file_paths:
+            file = clean_folder_name(file.replace(os.getcwd(), ''))
+            tar.add(file)
+            print(
+                f'Successfully compressed {file} into {compressed_file_name}')
+
+
+def determine_write_method(compression):
+    """
+    Given a specified compression type, choose the write method
+    for generating the file.
+    """
+    if compression == 'tar.bz2':
+        write_method = 'w:bz2'
+    if compression == 'tar.gz':
+        write_method = 'w:gz'
+    else:
+        write_method = 'w'
+
+    return write_method
 
 
 def decompress_file(source_full_path, destination_full_path, compression):
@@ -158,28 +177,58 @@ def decompress_file(source_full_path, destination_full_path, compression):
     """
 
     if compression == 'zip':
-        with ZipFile(source_full_path, 'r') as zip:
+        decompress_with_zip(
+    source_full_path,
+    destination_full_path,
+     compression)
+
+    if compression == 'tar.bz2':
+        decompress_with_tar(
+    source_full_path,
+    destination_full_path,
+     compression)
+
+    if compression == 'tar':
+        decompress_with_tar(
+    source_full_path,
+    destination_full_path,
+     compression)
+
+    if compression == 'tar.gz':
+        decompress_with_tar(
+    source_full_path,
+    destination_full_path,
+     compression)
+
+
+def decompress_with_zip(source_full_path, destination_full_path, compression):
+    read_method = determine_read_method(compression)
+    with ZipFile(source_full_path, read_method) as zip:
             zip.extractall(destination_full_path)
         print(
             f'Successfully extracted files from {source_full_path} to {destination_full_path}')
 
+def decompress_with_tar(source_full_path, destination_full_path, compression):
+    read_method = determine_read_method(compression)
+    file = tarfile.open(source_full_path, read_method)
+        file.extractall(path=destination_full_path)
+        print(
+            f'Successfully extracted files from {source_full_path} to {destination_full_path}')
+
+
+def determine_read_method(compression):
+    """
+    Given a specified compression type, choose the read method
+    for opening the file.
+    """
     if compression == 'tar.bz2':
-        file = tarfile.open(source_full_path, 'r:bz2')
-        file.extractall(path=destination_full_path)
-        print(
-            f'Successfully extracted files from {source_full_path} to {destination_full_path}')
-
-    if compression == 'tar':
-        file = tarfile.open(source_full_path, 'r')
-        file.extractall(path=destination_full_path)
-        print(
-            f'Successfully extracted files from {source_full_path} to {destination_full_path}')
-
+        read_method = 'r:bz2'
     if compression == 'tar.gz':
-        file = tarfile.open(source_full_path, 'r:gz')
-        file.extractall(path=destination_full_path)
-        print(
-            f'Successfully extracted files from {source_full_path} to {destination_full_path}')
+        read_method = 'r:gz'
+    else:
+        read_method = 'r'
+
+    return read_method
 
 
 def is_file_too_large(file_path, max_size_bytes=10000000):
