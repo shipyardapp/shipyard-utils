@@ -2,6 +2,8 @@ import os
 import re
 import glob
 import json
+from zipfile import ZipFile
+import tarfile
 
 # Functions for Files
 
@@ -102,6 +104,143 @@ def determine_destination_full_path(
         destination_folder_name, destination_file_name)
     return destination_full_path
 
+# Functions for handling large files
+
+
+def compress_files(file_paths, destination_full_path, compression):
+    """
+    Given a list of files, compress all of them into a single file.
+    Keeps the existing directory structure in tact.
+    """
+    if f'.{compression}' in destination_full_path:
+        compressed_file_name = destination_full_path
+    else:
+        compressed_file_name = f'{destination_full_path}.{compression}'
+
+    if compression == 'zip':
+        compress_with_zip(file_paths, compressed_file_name, compression)
+
+    if 'tar' in compression:
+        compress_with_tar(file_paths, compressed_file_name, compression)
+
+    return compressed_file_name
+
+
+def compress_with_zip(file_paths, compressed_file_name, compression):
+    """
+    Compress a list of files using the zip method.
+    """
+    write_method = determine_write_method(compression)
+
+    with ZipFile(compressed_file_name, write_method) as zip:
+        for file in file_paths:
+            file = clean_folder_name(file.replace(os.getcwd(), ''))
+            zip.write(file)
+            print(
+                f'Successfully compressed {file} into {compressed_file_name}')
+
+
+def compress_with_tar(file_paths, compressed_file_name, compression):
+    """
+    Compress a list of files using the tar method.
+    """
+    write_method = determine_write_method(compression)
+
+    with tarfile.open(compressed_file_name, write_method) as tar:
+        for file in file_paths:
+            file = clean_folder_name(file.replace(os.getcwd(), ''))
+            tar.add(file)
+            print(
+                f'Successfully compressed {file} into {compressed_file_name}')
+
+
+def determine_write_method(compression):
+    """
+    Given a specified compression type, choose the write method
+    for generating the file.
+    """
+    if compression == 'tar.bz2':
+        write_method = 'w:bz2'
+    if compression == 'tar.gz':
+        write_method = 'w:gz'
+    else:
+        write_method = 'w'
+
+    return write_method
+
+
+def decompress_file(source_full_path, destination_full_path, compression):
+    """
+    Decompress a given file, using the specified compression method.
+    """
+
+    if compression == 'zip':
+        decompress_with_zip(
+            source_full_path,
+            destination_full_path,
+            compression)
+
+    if 'tar' in compression:
+        decompress_with_tar(
+            source_full_path,
+            destination_full_path,
+            compression)
+
+
+def decompress_with_zip(source_full_path, destination_full_path, compression):
+    read_method = determine_read_method(compression)
+    with ZipFile(source_full_path, read_method) as zip:
+        zip.extractall(destination_full_path)
+        print(
+            f'Successfully extracted files from {source_full_path} to {destination_full_path}')
+
+
+def decompress_with_tar(source_full_path, destination_full_path, compression):
+    read_method = determine_read_method(compression)
+    file = tarfile.open(source_full_path, read_method)
+    file.extractall(path=destination_full_path)
+    print(
+        f'Successfully extracted files from {source_full_path} to {destination_full_path}')
+
+
+def determine_read_method(compression):
+    """
+    Given a specified compression type, choose the read method
+    for opening the file.
+    """
+    if compression == 'tar.bz2':
+        read_method = 'r:bz2'
+    if compression == 'tar.gz':
+        read_method = 'r:gz'
+    else:
+        read_method = 'r'
+
+    return read_method
+
+
+def is_file_too_large(file_path, max_size_bytes):
+    """
+    Determine if the file is too large for a specified limit.
+    Used to conditionally compress a file.
+    """
+    if os.stat(file_path).st_size >= max_size_bytes:
+        return True
+    else:
+        return False
+
+
+def are_files_too_large(file_paths, max_size_bytes):
+    """
+    Determine if the total size of all files in a list are too large for a specified limit.
+    Used to conditionally compress a file.
+    """
+    total_size = 0
+    for file in file_paths:
+        total_size += os.stat(file).st_size
+    if total_size >= max_size_bytes:
+        return True
+    else:
+        return False
 
 # Functions for Regex Matching Logic
 
@@ -125,6 +264,8 @@ def find_all_file_matches(file_names, file_name_re):
     for file in file_names:
         if re.search(file_name_re, file):
             matching_file_names.append(file)
+    print(f'Found {len(matching_file_names)} file matches.')
+    print(matching_file_names)
     return matching_file_names
 
 # Functions for Writing Files

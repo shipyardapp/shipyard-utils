@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "shipyard-utils"
-version = "0.1.2"
+version = "0.1.3"
 description = "Small scripts and utilities to make Shipyard Blueprint development easier."
 authors = ["Blake Burch <blake@shipyardapp.com>"]
 license = "Apache-2.0"
