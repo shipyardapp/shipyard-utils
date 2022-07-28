@@ -180,19 +180,7 @@ def decompress_file(source_full_path, destination_full_path, compression):
             destination_full_path,
             compression)
 
-    if compression == 'tar.bz2':
-        decompress_with_tar(
-            source_full_path,
-            destination_full_path,
-            compression)
-
-    if compression == 'tar':
-        decompress_with_tar(
-            source_full_path,
-            destination_full_path,
-            compression)
-
-    if compression == 'tar.gz':
+    if 'tar' in compression:
         decompress_with_tar(
             source_full_path,
             destination_full_path,
