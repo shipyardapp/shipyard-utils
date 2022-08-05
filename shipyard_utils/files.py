@@ -275,9 +275,9 @@ def find_all_file_matches(file_names, file_name_re, local=False):
 
 def remove_directories_from_file_list(file_list):
     # Remove directories from list.
-    for file in matching_file_names:
-        if os.path.isfile(file):
-            file_list.pop(file)
+    for file in file_list:
+        if os.path.isdir(file):
+            file_list.remove(file)
     return file_list
 
 # Functions for Writing Files
