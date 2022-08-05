@@ -252,8 +252,21 @@ def find_all_local_file_names(source_folder_name=None):
     """
     cwd = os.getcwd()
     cwd_extension = os.path.normpath(f'{cwd}/{source_folder_name}/**')
-    file_names = glob.glob(cwd_extension, recursive=True)
+    all_paths = glob.glob(cwd_extension, recursive=True)
+    file_names = remove_directories_from_path_list(all_paths)
     return file_names
+
+
+def remove_directories_from_path_list(path_list):
+    """
+    Given a list of paths, checks to see if the path is a file.
+    If so, it gets added to a separate list and returned.
+    """
+    only_files = []
+    for path in path_list:
+        if not os.path.isdir(path):
+            only_files.append(path)
+    return only_files
 
 
 def find_all_file_matches(file_names, file_name_re):
@@ -264,9 +277,11 @@ def find_all_file_matches(file_names, file_name_re):
     for file in file_names:
         if re.search(file_name_re, file):
             matching_file_names.append(file)
+
     print(f'Found {len(matching_file_names)} file matches.')
     print(matching_file_names)
     return matching_file_names
+
 
 # Functions for Writing Files
 
