@@ -256,7 +256,7 @@ def find_all_local_file_names(source_folder_name=None):
     return file_names
 
 
-def find_all_file_matches(file_names, file_name_re):
+def find_all_file_matches(file_names, file_name_re, local=False):
     """
     Return a list of all matching_file_names that matched the regular expression.
     """
@@ -264,9 +264,21 @@ def find_all_file_matches(file_names, file_name_re):
     for file in file_names:
         if re.search(file_name_re, file):
             matching_file_names.append(file)
+
+    if local:
+        matching_file_names = remove_directories_from_file_list(
+            matching_file_names)
     print(f'Found {len(matching_file_names)} file matches.')
     print(matching_file_names)
     return matching_file_names
+
+
+def remove_directories_from_file_list(file_list):
+    # Remove directories from list.
+    for file in matching_file_names:
+        if os.path.isfile(file):
+            file_list.pop(file)
+    return file_list
 
 # Functions for Writing Files
 
